@@ -1,7 +1,7 @@
 import { Form } from 'formik';
 import { shade } from 'polished';
 import styled from 'styled-components';
-import SignInBrackground from '../../assets/images/sign-in-background.png';
+import SignUpBrackground from '../../assets/images/signup-background.png';
 
 export const Container = styled.div`
   height: 100vh;
@@ -22,12 +22,10 @@ export const Content = styled.div`
   align-items: center;
   width: 100%;
   max-width: 700px;
-
   form {
     margin: 80px;
     width: 340px;
     text-align: center;
-
     h1 {
       margin-bottom: 24px;
     }
@@ -46,7 +44,7 @@ export const Content = styled.div`
   }
 
   & > a {
-    color: #ff9000;
+    color: #f4ede8;
     display: block;
     margin-top: 24px;
     text-decoration: none;
@@ -67,6 +65,6 @@ export const Content = styled.div`
 
 export const Background = styled.div`
   flex: 1;
-  background: url(${SignInBrackground}) no-repeat center;
+  background: url(${SignUpBrackground}) no-repeat center;
   background-size: cover;
 `;

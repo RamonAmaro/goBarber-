@@ -1,12 +1,13 @@
 import { Formik } from 'formik';
-import React from 'react';
-import { FiLock, FiLogIn, FiMail } from 'react-icons/fi';
+import React, { useRef } from 'react';
+import { FiArrowLeft, FiLock, FiMail, FiUser } from 'react-icons/fi';
 import * as Yup from 'yup';
 import Logo from '../../assets/images/logo.svg';
 import { Button, Input } from '../../components';
 import { Background, Container, Content, FormFormik } from './styles';
 
-const SignInSchema = Yup.object().shape({
+const SignUpSchema = Yup.object().shape({
+  name: Yup.string().required('Nome obrigatorio'),
   email: Yup.string()
     .email('Digite um email válido')
     .required('Email obrigatorio'),
@@ -15,14 +16,18 @@ const SignInSchema = Yup.object().shape({
     .min(6, 'Mínimo 6 caracteres'),
 });
 
-export const SignIn: React.FC = () => {
+export const SignUp: React.FC = () => {
+  const formRef = useRef<HTMLFormElement>(null);
+
   return (
     <Container>
+      <Background />
       <Content>
         <img src={Logo} alt="goBarber" />
+
         <Formik
-          initialValues={{ email: '', password: '' }}
-          validationSchema={SignInSchema}
+          initialValues={{ name: '', email: '', password: '' }}
+          validationSchema={SignUpSchema}
           onSubmit={(values, { setSubmitting }) => {
             setTimeout(() => {
               alert(JSON.stringify(values, null, 2));
@@ -30,9 +35,27 @@ export const SignIn: React.FC = () => {
             }, 400);
           }}
         >
-          {({ values, errors, handleChange, handleBlur, isSubmitting }) => (
-            <FormFormik>
+          {({
+            values,
+            errors,
+
+            handleChange,
+            handleBlur,
+            isSubmitting,
+          }) => (
+            <FormFormik ref={formRef}>
               <h1> Faça seu logon </h1>
+
+              <Input
+                icon={FiUser}
+                type="text"
+                name="name"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.name}
+                placeholder="Digite seu nome"
+                error={errors.name}
+              />
 
               <Input
                 icon={FiMail}
@@ -57,20 +80,16 @@ export const SignIn: React.FC = () => {
               />
 
               <Button type="submit" disabled={isSubmitting}>
-                Entrar
+                Cadastrar
               </Button>
-
-              <a href="#"> Esqueci minha senha </a>
             </FormFormik>
           )}
         </Formik>
 
         <a href="#">
-          <FiLogIn /> Criar conta
+          <FiArrowLeft /> Voltar para logon
         </a>
       </Content>
-
-      <Background></Background>
     </Container>
   );
 };
