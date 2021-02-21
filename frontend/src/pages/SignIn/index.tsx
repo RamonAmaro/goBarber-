@@ -4,6 +4,8 @@ import { FiLock, FiLogIn, FiMail } from 'react-icons/fi';
 import * as Yup from 'yup';
 import Logo from '../../assets/images/logo.svg';
 import { Button, Input } from '../../components';
+import { useAuth } from '../../hook/auth';
+import { useToast } from '../../hook/toast';
 import { Background, Container, Content, FormFormik } from './styles';
 
 const SignInSchema = Yup.object().shape({
@@ -16,6 +18,11 @@ const SignInSchema = Yup.object().shape({
 });
 
 export const SignIn: React.FC = () => {
+  const { user, SignIn } = useAuth();
+  const { addToast } = useToast();
+
+  console.log(user);
+
   return (
     <Container>
       <Content>
@@ -23,14 +30,31 @@ export const SignIn: React.FC = () => {
         <Formik
           initialValues={{ email: '', password: '' }}
           validationSchema={SignInSchema}
-          onSubmit={(values, { setSubmitting }) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              setSubmitting(false);
-            }, 400);
+          onSubmit={async values => {
+            try {
+              await SignIn({
+                email: values.email,
+                password: values.password,
+              });
+
+              addToast({
+                type: 'sucess',
+                title: 'Logado com sucesso',
+              });
+            } catch (err) {
+              if (err instanceof Yup.ValidationError) {
+                return;
+              }
+              addToast({
+                type: 'error',
+                title: 'Erro na autenticação',
+                description:
+                  'Aconteceu um erro ao fazer login, cheque as credenciais !',
+              });
+            }
           }}
         >
-          {({ values, errors, handleChange, handleBlur, isSubmitting }) => (
+          {({ values, errors, handleChange, handleBlur }) => (
             <FormFormik>
               <h1> Faça seu logon </h1>
 
@@ -56,9 +80,7 @@ export const SignIn: React.FC = () => {
                 error={errors.password}
               />
 
-              <Button type="submit" disabled={isSubmitting}>
-                Entrar
-              </Button>
+              <Button type="submit">Entrar</Button>
 
               <a href="#"> Esqueci minha senha </a>
             </FormFormik>
