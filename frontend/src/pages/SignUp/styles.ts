@@ -1,7 +1,19 @@
 import { Form } from 'formik';
 import { shade } from 'polished';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import SignUpBrackground from '../../assets/images/signup-background.png';
+
+const apperFromRight = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  },
+  to {
+    opacity: 1
+    transform: translateX(0);
+  },
+
+`;
 
 export const Container = styled.div`
   height: 100vh;
@@ -22,10 +34,21 @@ export const Content = styled.div`
   align-items: center;
   width: 100%;
   max-width: 700px;
+`;
+
+export const AnimationContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  place-content: center;
+  align-items: center;
+
+  animation: ${apperFromRight} 1s;
+
   form {
     margin: 80px;
     width: 340px;
     text-align: center;
+
     h1 {
       margin-bottom: 24px;
     }
@@ -44,7 +67,7 @@ export const Content = styled.div`
   }
 
   & > a {
-    color: #f4ede8;
+    color: #ff9000;
     display: block;
     margin-top: 24px;
     text-decoration: none;
