@@ -88,7 +88,12 @@ export const SignIn: React.FC = () => {
                   error={errors.password}
                 />
 
-                <Button type="submit">Entrar</Button>
+                <Button
+                  type="submit"
+                  disabled={!!values.email || !!values.password}
+                >
+                  Entrar
+                </Button>
 
                 <a href="#"> Esqueci minha senha </a>
               </FormFormik>

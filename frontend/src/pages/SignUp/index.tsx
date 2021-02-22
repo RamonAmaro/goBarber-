@@ -1,10 +1,12 @@
 import { Formik } from 'formik';
 import React, { useRef } from 'react';
 import { FiArrowLeft, FiLock, FiMail, FiUser } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
 import Logo from '../../assets/images/logo.svg';
 import { Button, Input } from '../../components';
+import { useToast } from '../../hook/toast';
+import api from '../../services/apiClient';
 import {
   AnimationContainer,
   Background,
@@ -12,6 +14,12 @@ import {
   Content,
   FormFormik,
 } from './styles';
+
+interface ISignUpFomrData {
+  name: string;
+  email: string;
+  password: string;
+}
 
 const SignUpSchema = Yup.object().shape({
   name: Yup.string().required('Nome obrigatorio'),
@@ -26,6 +34,10 @@ const SignUpSchema = Yup.object().shape({
 export const SignUp: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);
 
+  const history = useHistory();
+
+  const { addToast } = useToast();
+
   return (
     <Container>
       <Background />
@@ -36,21 +48,27 @@ export const SignUp: React.FC = () => {
           <Formik
             initialValues={{ name: '', email: '', password: '' }}
             validationSchema={SignUpSchema}
-            onSubmit={(values, { setSubmitting }) => {
-              setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
-                setSubmitting(false);
-              }, 400);
+            onSubmit={async (values: ISignUpFomrData) => {
+              try {
+                await api.post('/users', values);
+
+                history.push('/');
+
+                addToast({
+                  title: 'Cadastro Realizado',
+                  type: 'sucess',
+                  description: 'Já pode realizar logon na plataforma.',
+                });
+              } catch (err) {
+                addToast({
+                  type: 'error',
+                  title: 'Erro ao realizar Cadastro',
+                  description: 'Confira suas credenciais ou tente mais tarde',
+                });
+              }
             }}
           >
-            {({
-              values,
-              errors,
-
-              handleChange,
-              handleBlur,
-              isSubmitting,
-            }) => (
+            {({ values, errors, handleChange, handleBlur }) => (
               <FormFormik ref={formRef}>
                 <h1> Faça seu logon </h1>
 
@@ -87,7 +105,12 @@ export const SignUp: React.FC = () => {
                   error={errors.password}
                 />
 
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={
+                    !!values.email || !!values.email || !!values.password
+                  }
+                >
                   Cadastrar
                 </Button>
               </FormFormik>
