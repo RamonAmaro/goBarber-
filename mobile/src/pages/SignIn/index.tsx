@@ -1,15 +1,21 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import { Formik } from 'formik';
+import React, { useRef } from 'react';
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TextInput,
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import * as Yup from 'yup';
 import logoImg from '../../assets/logo.png';
-import { Button, Input } from '../../components';
+import { Button } from '../../components';
+import Input from '../../components/Input';
+import { useAuth } from '../../hooks/auth';
 import {
   Container,
   CreateAccountButton,
@@ -19,8 +25,20 @@ import {
   Title,
 } from './styles';
 
+const validationSchema = Yup.object().shape({
+  email: Yup.string().required().email('Email inválido'),
+  password: Yup.string()
+    .required('Senha obrigatorio')
+    .min(4, 'Minimo 4 caracteres'),
+});
+
 export const SignIn: React.FC = () => {
+  const passwordRef = useRef<TextInput>(null);
   const navigation = useNavigation();
+
+  const { SignIn, user } = useAuth();
+
+  console.log(user);
 
   return (
     <>
@@ -39,10 +57,60 @@ export const SignIn: React.FC = () => {
             <View>
               <Title> Faça seu logon </Title>
             </View>
-            <Input name="email" icon="mail" placeholder="email" />
-            <Input name="password" icon="lock" placeholder="senha" />
 
-            <Button onPress={() => console.log('clicou')}>Entrar</Button>
+            <Formik
+              initialValues={{ email: '', password: '' }}
+              onSubmit={async values => {
+                try {
+                  Alert.alert(JSON.stringify(values));
+                  await SignIn({
+                    email: values.email,
+                    password: values.password,
+                  });
+                } catch {
+                  Alert.alert(
+                    'Erro na atuenticação',
+                    'Ocorreu um erro ao fazer login',
+                  );
+                }
+              }}
+              validationSchema={validationSchema}
+            >
+              {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+                <>
+                  <Input
+                    error={errors.email}
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    name="email"
+                    icon="mail"
+                    placeholder="Email"
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                    keyboardType="email-address"
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                  />
+
+                  <Input
+                    error={errors.password}
+                    ref={passwordRef}
+                    name="password"
+                    icon="lock"
+                    placeholder="Senha"
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                    secureTextEntry
+                    returnKeyType="send"
+                    onSubmitEditing={handleSubmit}
+                  />
+
+                  <Button handleSubmit={handleSubmit}>Entrar</Button>
+                </>
+              )}
+            </Formik>
 
             <ForgotPassword
               onPress={() => {

@@ -4,11 +4,16 @@ import { ButtonText, Container } from './styles';
 
 interface ButtonProps extends RectButtonProperties {
   children: string;
+  handleSubmit?: () => void;
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, ...rest }) => {
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  handleSubmit,
+  ...rest
+}) => {
   return (
-    <Container {...rest}>
+    <Container {...rest} onPress={handleSubmit}>
       <ButtonText> {children} </ButtonText>
     </Container>
   );
