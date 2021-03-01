@@ -1,14 +1,13 @@
+import User from '@modules/users/infra/typeorm/entities/User';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-
-import User from './User';
 
 @Entity('appointments')
 class Appointment {
